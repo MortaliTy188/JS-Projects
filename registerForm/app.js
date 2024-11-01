@@ -1,42 +1,52 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { Pool } = require("pg");
+const { MongoClient } = require("mongodb");
 
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "register",
-  password: "123123",
-  port: 5432,
-});
+const uri =
+  "mongodb+srv://test:2N97RKCRTAKv@users.eob8v.mongodb.net/?retryWrites=true&w=majority&appName=Users";
+const client = new MongoClient(uri);
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(express.static("public"));
 
-app.post("/sign_up", function (req, res) {
-  let { name, email, phone, password } = req.body;
+async function connectToDB() {
+  try {
+    await client.connect();
+    console.log("Подключение к MongoDB установлено");
+  } catch (err) {
+    console.error("Ошибка подключения к MongoDB:", err);
+    process.exit(1);
+  }
+}
 
-  let insertQuery = `
-    INSERT INTO users (name, email, phone, password) 
-    VALUES ($1, $2, $3, $4)
-  `;
+connectToDB();
 
-  pool.query(insertQuery, [name, email, phone, password], (err, result) => {
-    if (err) {
-      console.error("Ошибка при вставке данных:", err);
-      res.status(500).json({ error: "Ошибка при регистрации" });
-    } else {
-      console.log("Запись успешно добавлена");
-      res.status(200).json({ message: "Регистрация прошла успешно" });
-    }
-  });
+app.post("/sign_up", async function (req, res) {
+  const { name, email, phone, password } = req.body;
+
+  try {
+    const db = client.db("users");
+    const usersCollection = db.collection("users");
+
+    const result = await usersCollection.insertOne({
+      name,
+      email,
+      phone,
+      password,
+    });
+
+    console.log("Запись успешно добавлена:", result.insertedId);
+    res.status(200).json({ message: "Регистрация прошла успешно" });
+  } catch (err) {
+    console.error("Ошибка при вставке данных:", err);
+    res.status(500).json({ error: "Ошибка при регистрации" });
+  }
 });
 
-app.listen(3000, function () {
-  console.log(`сервер запущен http://localhost:${port}`);
+app.listen(port, function () {
+  console.log(`Сервер запущен http://localhost:${port}`);
 });
