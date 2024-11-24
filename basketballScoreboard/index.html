@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="item">
+            <h1 class="title">HOME</h1>
+            <div class="score home">0</div>
+            <div class="buttons">
+                <button class="plusOne" onclick="plusOne(home)">+1</button>
+                <button class="plusTwo" onclick="plusTwo(home)">+2</button>
+                <button class="plusThree" onclick="plusThree(home)">+3</button>
+            </div>
+        </div>
+        <div class="item">
+            <h1 class="title">Guest</h1>
+            <div class="score guest">0</div>
+            <div class="buttons">
+                <button class="plusOne" onclick="plusOne(guest)">+1</button>
+                <button class="plusTwo" onclick="plusTwo(guest)">+2</button>
+                <button class="plusThree" onclick="plusThree(guest)">+3</button>
+            </div>
+        </div>
+    </div>
+    <button class="new-game" onclick="newGame()">New game</button>
+    <script src="/index.js"></script>
+</body>
+</html>
